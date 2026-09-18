@@ -16,6 +16,12 @@ services:
         fromDatabase:
           name: weraiko-db
           property: connectionString
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: owner
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: owner@weraiko.co.ke
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
 
 databases:
   - name: weraiko-db
