@@ -90,9 +90,14 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------- Static & Media ----------
+
+
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+WHITENOISE_AUTOREFRESH = True
+WHITENOISE_USE_FINDERS = True
 
 # Use Cloudinary for user-uploaded files (logos, CVs, guide covers)
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
