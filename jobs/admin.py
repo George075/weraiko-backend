@@ -72,9 +72,6 @@ class GuideAdmin(admin.ModelAdmin):
         ('Content', {
             'fields': ('excerpt', 'content')
         }),
-        ('Media', {
-            'fields': ('cover_image',)
-        }),
         ('Timestamps', {
             'fields': ('published_at', 'updated_at'),
             'classes': ('collapse',)

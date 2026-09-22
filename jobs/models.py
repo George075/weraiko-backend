@@ -177,7 +177,6 @@ class Application(models.Model):
 
 
 class Guide(models.Model):
-    """Editorial articles: CV tips, salary guides, interview questions, etc."""
     CATEGORY_CHOICES = [
         ('CV & Resume', 'CV & Resume'),
         ('Interviews', 'Interviews'),
@@ -191,10 +190,7 @@ class Guide(models.Model):
     slug = models.SlugField(max_length=220, unique=True, blank=True)
     category = models.CharField(max_length=60, choices=CATEGORY_CHOICES)
     excerpt = models.CharField(max_length=320)
-    content = models.TextField(
-        help_text='Main article. Use ## for headings, blank lines to separate paragraphs.'
-    )
-    #cover_image = models.ImageField(upload_to='guide_covers/', blank=True, null=True)
+    content = models.TextField()
     author = models.CharField(max_length=120, default='Weraiko Team')
     read_minutes = models.PositiveIntegerField(default=4)
     is_published = models.BooleanField(default=True)
@@ -203,8 +199,6 @@ class Guide(models.Model):
 
     class Meta:
         ordering = ['-published_at']
-        verbose_name = 'Guide'
-        verbose_name_plural = 'Guides'
 
     def save(self, *args, **kwargs):
         if not self.slug:

@@ -57,26 +57,15 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
 
 class GuideListSerializer(serializers.ModelSerializer):
-    cover_image_url = serializers.SerializerMethodField()
-
     class Meta:
         model = Guide
         fields = (
             'id', 'title', 'slug', 'category', 'excerpt',
-            'cover_image_url', 'author', 'read_minutes', 'published_at',
+            'author', 'read_minutes', 'published_at',
         )
-
-    def get_cover_image_url(self, obj):
-        if not obj.cover_image:
-            return None
-        request = self.context.get('request')
-        if request:
-            return request.build_absolute_uri(obj.cover_image.url)
-        return obj.cover_image.url
 
 
 class GuideDetailSerializer(serializers.ModelSerializer):
-    cover_image_url = serializers.SerializerMethodField()
     content_html = serializers.SerializerMethodField()
 
     class Meta:
@@ -84,17 +73,9 @@ class GuideDetailSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'title', 'slug', 'category', 'excerpt',
             'content', 'content_html',
-            'cover_image_url', 'author', 'read_minutes',
+            'author', 'read_minutes',
             'published_at', 'updated_at',
         )
-
-    def get_cover_image_url(self, obj):
-        if not obj.cover_image:
-            return None
-        request = self.context.get('request')
-        if request:
-            return request.build_absolute_uri(obj.cover_image.url)
-        return obj.cover_image.url
 
     def get_content_html(self, obj):
         import html
