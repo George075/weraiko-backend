@@ -194,7 +194,7 @@ class Guide(models.Model):
     content = models.TextField(
         help_text='Main article. Use ## for headings, blank lines to separate paragraphs.'
     )
-    cover_image = models.ImageField(upload_to='guide_covers/', blank=True, null=True)
+    #cover_image = models.ImageField(upload_to='guide_covers/', blank=True, null=True)
     author = models.CharField(max_length=120, default='Weraiko Team')
     read_minutes = models.PositiveIntegerField(default=4)
     is_published = models.BooleanField(default=True)
