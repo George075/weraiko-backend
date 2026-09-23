@@ -120,7 +120,8 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://127.0.0.1:5500,http://localhost:5500'
+    default='http://127.0.0.1:5500,http://localhost:5500,https://weraiko.onrender.com,https://weraiko-frontend.onrender.com'
+   
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
