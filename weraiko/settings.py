@@ -118,12 +118,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://127.0.0.1:5500,http://localhost:5500,https://weraiko.onrender.com,https://weraiko-frontend.onrender.com'
-   
-).split(',')
-CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+# ---------- CORS ----------
+# Allow all origins — safe for a public read-only API
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = False
 
 JOB_EXPIRATION_DAYS = 21
