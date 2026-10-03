@@ -2,7 +2,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-
+from django.utils.text import slugify
 from accounts.models import Organization
 
 
@@ -58,7 +58,9 @@ class Job(models.Model):
 
     # ---- Category (used by filters + frontend) ----
     CATEGORY_CHOICES = [
-        ('Tech & Engineering', 'Tech & Engineering'),
+        ('Technology & IT', 'Technology & IT'),
+        ('Engineering', 'Engineering'),
+        ('Customer Service', 'Customer Service'),
         ('Business & Administration', 'Business & Administration'),
         ('Hospitality & Tourism', 'Hospitality & Tourism'),
         ('Health & Medicine', 'Health & Medicine'),
@@ -70,6 +72,7 @@ class Job(models.Model):
 
     # ---- Core ----
     title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
     category = models.CharField(max_length=60, choices=CATEGORY_CHOICES)
     company = models.CharField(max_length=200, help_text='Display name shown on the card.')
     organization = models.ForeignKey(
@@ -151,7 +154,16 @@ class Job(models.Model):
 
     def __str__(self):
         return f'{self.title} @ {self.company}'
-
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(f'{self.title} {self.company}')[:230] or 'job'
+            slug = base
+            n = 1
+            while Job.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                n += 1
+                slug = f'{base}-{n}'
+            self.slug = slug
+        super().save(*args, **kwargs)
     @property
     def is_expired(self):
         return timezone.now() >= self.expires_at

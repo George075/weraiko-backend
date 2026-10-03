@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>{{ job.title }} at {{ job.company }} | Weraiko</title>
+<meta name="description" content="{{ job.description|truncatewords:25 }}">
+
+<link rel="canonical" href="https://www.wera-iko.co.ke/job/{{ job.slug }}/">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ job.title }} at {{ job.company }}">
+<meta property="og:description" content="{{ job.description|truncatewords:25 }}">
+<meta property="og:url" content="https://www.wera-iko.co.ke/job/{{ job.slug }}/">
+<meta property="og:site_name" content="Weraiko">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ job.title }} at {{ job.company }}">
+<meta name="twitter:description" content="{{ job.description|truncatewords:25 }}">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "JobPosting",
+  "title": "{{ job.title|escapejs }}",
+  "description": "{{ job.full_description|escapejs|truncatewords:300 }}",
+  "datePosted": "{{ job.posted_date|date:'c' }}",
+  "validThrough": "{{ job.expires_at|date:'c' }}",
+  "employmentType": "{{ job.get_job_type_display }}",
+  "hiringOrganization": {
+    "@type": "Organization",
+    "name": "{{ job.company|escapejs }}"
+  },
+  "jobLocation": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ job.location|escapejs }}",
+      "addressCountry": "KE"
+    }
+  }
+}
+</script>
+
+<link rel="icon" href="https://www.wera-iko.co.ke/images/weraikologo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<style>
+:root { --ink:#0b1220; --slate:#1e293b; --steel:#475569; --muted:#64748b;
+  --mist:#f6f7fb; --paper:#fff; --line:#e5e7eb;
+  --amber:#f59e0b; --amber-dark:#d97706; --amber-soft:#fef3c7;
+  --emerald:#059669; --emerald-soft:#d1fae5;
+  --deep:#0f2b46; --deep-2:#143b5c; }
+* { box-sizing: border-box; }
+body { font-family:'Inter', system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--mist); color: var(--slate);
+  margin: 0; min-height: 100vh; font-size: 15px; line-height: 1.65;
+  -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+h1, h2, h3 { font-weight: 800; letter-spacing: -.025em; color: var(--ink); line-height: 1.15; }
+
+.nav { position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,.95); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line); }
+.nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 2rem; height: 68px;
+  display: flex; align-items: center; gap: 1.25rem; }
+.nav-logo img { height: 36px; display: block; }
+.nav-links { display: flex; gap: 1.75rem; font-size: .9rem; font-weight: 600; color: var(--steel); }
+.nav-links a { padding: .35rem 0; border-bottom: 2px solid transparent; }
+.nav-links a:hover { color: var(--ink); }
+.nav-actions { margin-left: auto; }
+.btn { display: inline-flex; align-items: center; gap: .45rem;
+  padding: .65rem 1.15rem; border-radius: 10px; font-weight: 600;
+  font-size: .9rem; cursor: pointer; border: 1px solid transparent;
+  text-decoration: none; line-height: 1.2; font-family: inherit;
+  transition: background-color .15s; }
+.btn-amber { background: var(--amber); border-color: var(--amber); color: #fff; }
+.btn-amber:hover { background: var(--amber-dark); color: #fff; }
+
+.container { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+.back-link { display: inline-flex; align-items: center; gap: .4rem;
+  color: var(--steel); font-size: .9rem; margin-bottom: 1.5rem; font-weight: 600; }
+.back-link:hover { color: var(--ink); }
+
+.header-card { background: var(--paper); border: 1px solid var(--line);
+  border-left: 4px solid var(--amber); border-radius: 14px;
+  padding: 2rem 2.15rem; margin-bottom: 1.5rem; }
+.header-card h1 { font-size: clamp(1.5rem, 3vw, 2rem); margin: 0 0 .75rem; line-height: 1.2; }
+.header-meta { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem;
+  font-size: .9rem; color: var(--muted); margin-bottom: 1.25rem; }
+.header-meta span { display: inline-flex; align-items: center; gap: .4rem; }
+.header-meta i { color: var(--amber); }
+.tag-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+.tag { display: inline-flex; align-items: center; gap: .35rem;
+  padding: .35rem .85rem; border-radius: 999px;
+  font-size: .75rem; font-weight: 700; background: var(--mist); color: var(--steel); }
+.tag.amber { background: var(--amber-soft); color: var(--amber-dark); }
+.tag.emerald { background: var(--emerald-soft); color: var(--emerald); }
+
+.section { background: var(--paper); border: 1px solid var(--line);
+  border-radius: 14px; padding: 1.75rem 2rem; margin-bottom: 1.25rem; }
+.section h2 { font-size: 1.2rem; margin: 0 0 1rem;
+  padding-bottom: .5rem; border-bottom: 2px solid var(--mist); }
+.section p { margin: 0 0 1rem; line-height: 1.7; }
+.section p:last-child { margin-bottom: 0; }
+.section ul { list-style: none; padding: 0; margin: 0; }
+.section ul li { position: relative; padding: .4rem 0 .4rem 1.5rem; line-height: 1.6; }
+.section ul li::before { content: ""; position: absolute; left: 0; top: .85rem;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+.section .full-desc h2 { border: none; padding: 0; font-size: 1.1rem; margin: 1.5rem 0 .5rem; }
+.section .full-desc h3 { margin: 1.25rem 0 .4rem; font-size: 1rem; color: var(--deep); }
+
+.apply-card { background: linear-gradient(135deg, var(--deep) 0%, var(--deep-2) 100%);
+  color: #fff; border-radius: 14px; padding: 2rem; margin-top: 1.5rem; }
+.apply-card h2 { color: #fff; font-size: 1.2rem; margin: 0 0 .75rem; }
+.apply-card p { color: rgba(255,255,255,.8); margin: 0 0 1.25rem; font-size: .95rem; }
+.apply-card .btn-amber { padding: .85rem 1.5rem; font-size: .95rem; }
+.apply-card code { background: rgba(255,255,255,.15); color: #fff;
+  padding: .5rem .85rem; border-radius: 8px; font-size: .85rem; display: inline-block; margin: .5rem 0; }
+
+.expired-banner { background: #fee2e2; border: 1px solid #fecaca;
+  color: #991b1b; padding: 1rem 1.25rem; border-radius: 10px;
+  margin-bottom: 1.5rem; font-size: .9rem; display: flex; align-items: center; gap: .6rem; }
+
+.site-foot { background: var(--deep); color: rgba(255,255,255,.6);
+  padding: 2rem; text-align: center; font-size: .85rem; margin-top: 3rem; }
+
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+  .nav-inner { padding: 0 1rem; }
+  .container { padding: 1.5rem 1rem 3rem; }
+  .header-card { padding: 1.5rem; }
+  .section { padding: 1.35rem 1.5rem; }
+  .apply-card { padding: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="https://www.wera-iko.co.ke/" class="nav-logo">
+      <img src="https://www.wera-iko.co.ke/images/weraikologo.png" alt="Weraiko">
+    </a>
+    <div class="nav-links">
+      <a href="https://www.wera-iko.co.ke/index.html">Jobs</a>
+      <a href="https://www.wera-iko.co.ke/home.html">Why Weraiko</a>
+      <a href="https://www.wera-iko.co.ke/guides.html">Guides</a>
+    </div>
+    <div class="nav-actions">
+      <a href="https://www.wera-iko.co.ke/index.html" class="btn btn-amber">
+        <i class="bi bi-briefcase"></i> Browse Jobs
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+
+  <a href="https://www.wera-iko.co.ke/index.html" class="back-link">
+    <i class="bi bi-arrow-left"></i> Back to all jobs
+  </a>
+
+  {% if job.is_expired %}
+  <div class="expired-banner">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>This job closed on {{ job.expires_at|date:"jS F Y" }}. Browse similar roles on the <a href="https://www.wera-iko.co.ke/index.html" style="color:#991b1b;text-decoration:underline;">main job board</a>.</span>
+  </div>
+  {% endif %}
+
+  <div class="header-card">
+    <h1>{{ job.title }}</h1>
+    <div class="header-meta">
+      <span><i class="bi bi-building"></i> {{ job.company }}</span>
+      <span><i class="bi bi-geo-alt"></i> {{ job.location }}</span>
+      <span><i class="bi bi-calendar"></i> Posted {{ job.posted_date|date:"jS F Y" }}</span>
+      {% if job.deadline %}
+      <span><i class="bi bi-hourglass-split"></i> Deadline {{ job.deadline|date:"jS F Y" }}</span>
+      {% endif %}
+    </div>
+    <div class="tag-row">
+      <span class="tag amber">{{ job.category }}</span>
+      {% if job.job_type %}<span class="tag">{{ job.get_job_type_display }}</span>{% endif %}
+      {% if job.education_level %}<span class="tag">{{ job.get_education_level_display }}</span>{% endif %}
+      {% if job.salary_range %}<span class="tag emerald"><i class="bi bi-cash"></i> {{ job.salary_range }}</span>{% endif %}
+    </div>
+  </div>
+
+  {% if job.description %}
+  <div class="section">
+    <h2>About this role</h2>
+    <p>{{ job.description }}</p>
+  </div>
+  {% endif %}
+
+  {% if job.full_description %}
+  <div class="section">
+    <h2>Full description</h2>
+    <div class="full-desc">
+      {{ full_description_html|safe }}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if job.responsibilities %}
+  <div class="section">
+    <h2>Key Responsibilities</h2>
+    <ul>
+      {% for r in job.responsibilities %}<li>{{ r }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if job.qualifications %}
+  <div class="section">
+    <h2>Qualifications</h2>
+    <ul>
+      {% for q in job.qualifications %}<li>{{ q }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="apply-card">
+    <h2><i class="bi bi-send-fill"></i> How to Apply</h2>
+
+    {% if job.application_type == 'LINK' and job.application_target %}
+      <p>Applications for this role are handled on the employer's site.</p>
+      <a href="{{ job.application_target }}" target="_blank" rel="noopener nofollow" class="btn btn-amber">
+        <i class="bi bi-box-arrow-up-right"></i> Apply on Employer's Site
+      </a>
+
+    {% elif job.application_type == 'EMAIL' and job.application_target %}
+      <p>Send your application directly to:</p>
+      <code>{{ job.application_target }}</code>
+      <div style="margin-top:1rem;">
+        <a href="mailto:{{ job.application_target }}?subject=Application for {{ job.title|urlencode }}" class="btn btn-amber">
+          <i class="bi bi-envelope-fill"></i> Open Mail App
+        </a>
+      </div>
+
+    {% elif job.application_custom_text %}
+      <p>{{ job.application_custom_text }}</p>
+
+    {% else %}
+      <p>Follow the instructions in the full description above to apply.</p>
+    {% endif %}
+  </div>
+
+</main>
+
+<footer class="site-foot">
+  &copy; Weraiko 2026 — Verified Kenyan Jobs
+</footer>
+
+</body>
+</html>
