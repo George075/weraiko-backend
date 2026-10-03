@@ -86,6 +86,8 @@ def _render_full_description(text):
     """Convert plain text with ## headings into safe HTML."""
     if not text:
         return ''
+    # Normalise line endings (Windows \r\n and Mac \r -> Unix \n)
+    text = text.replace('\r\n', '\n').replace('\r', '\n')
     blocks = [b.strip() for b in text.split('\n\n') if b.strip()]
     parts = []
     for block in blocks:
@@ -98,7 +100,6 @@ def _render_full_description(text):
         else:
             parts.append(f'<p>{html_module.escape(block)}</p>')
     return ''.join(parts)
-
 
 def job_page(request, slug):
     """Server-rendered job detail page — fully crawlable by Google / AI."""
