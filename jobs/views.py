@@ -83,23 +83,54 @@ def guide_detail(request, slug):
 
 
 def _render_full_description(text):
-    """Convert plain text with ## headings into safe HTML."""
+    """Convert plain text with ## headings into safe HTML.
+    Skips 'Key Responsibilities' and 'Qualifications' headings since
+    those are rendered separately from the JSON fields.
+    """
     if not text:
         return ''
-    # Normalise line endings (Windows \r\n and Mac \r -> Unix \n)
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     blocks = [b.strip() for b in text.split('\n\n') if b.strip()]
+
+    # Headings to skip (already rendered from JSON lists)
+    SKIP_HEADINGS = {
+        'key responsibilities', 'responsibilities',
+        'qualifications', 'qualification and competencies',
+        'qualifications and experience',
+        'required experience',
+    }
+
     parts = []
+    skip_until_next_h2 = False
+
     for block in blocks:
-        if block.startswith('### '):
+        # Check if this block is an h2/h3 heading
+        is_h2 = block.startswith('## ')
+        is_h3 = block.startswith('### ')
+
+        if is_h2:
+            heading_text = block[3:].strip().lower()
+            # If this h2 is one we render separately, skip its content
+            if heading_text in SKIP_HEADINGS:
+                skip_until_next_h2 = True
+                continue
+            else:
+                skip_until_next_h2 = False
+                parts.append(f'<h2>{html_module.escape(block[3:].strip())}</h2>')
+                continue
+
+        if skip_until_next_h2:
+            # Inside a skipped section — don't render
+            continue
+
+        if is_h3:
             parts.append(f'<h3>{html_module.escape(block[4:].strip())}</h3>')
-        elif block.startswith('## '):
-            parts.append(f'<h2>{html_module.escape(block[3:].strip())}</h2>')
         elif block.startswith('# '):
             parts.append(f'<h2>{html_module.escape(block[2:].strip())}</h2>')
         else:
             parts.append(f'<p>{html_module.escape(block)}</p>')
-    return ''.join(parts)
+
+    return ''.join(parts)return ''.join(parts)
 
 def job_page(request, slug):
     """Server-rendered job detail page — fully crawlable by Google / AI."""
