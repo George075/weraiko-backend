@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ heading }} | Weraiko</title>
+<meta name="description" content="{{ intro }}">
+<link rel="canonical" href="{{ canonical_url }}">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ heading }} | Weraiko">
+<meta property="og:description" content="{{ intro }}">
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:site_name" content="Weraiko">
+
+<link rel="icon" href="https://www.wera-iko.co.ke/images/weraikologo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#0b1220;--slate:#1e293b;--steel:#475569;--muted:#64748b;
+  --mist:#f6f7fb;--paper:#fff;--line:#e5e7eb;--line-soft:#f1f3f7;
+  --amber:#f59e0b;--amber-dark:#d97706;--amber-soft:#fef3c7;
+  --emerald:#059669;--emerald-soft:#d1fae5;
+  --deep:#0f2b46;--deep-2:#143b5c;
+}
+*{box-sizing:border-box;}
+body{
+  font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--mist);color:var(--slate);
+  margin:0;min-height:100vh;display:flex;flex-direction:column;
+  font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit;}
+h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.15;}
+
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.65rem 1.15rem;border-radius:10px;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid transparent;text-decoration:none;line-height:1.2;font-family:inherit;}
+.btn-sm{padding:.45rem .9rem;font-size:.82rem;border-radius:8px;}
+.btn-amber{background:var(--amber);border-color:var(--amber);color:#fff;}
+.btn-amber:hover{background:var(--amber-dark);color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--slate);}
+.btn-ghost:hover{border-color:var(--slate);background:var(--paper);}
+
+.topbar{position:sticky;top:0;z-index:1200;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.topbar-inner{max-width:1280px;margin:0 auto;padding:0 2rem;height:68px;display:flex;align-items:center;gap:1.5rem;}
+.topbar .logo img{height:36px;display:block;}
+.topbar .nav-links{display:flex;gap:1.75rem;font-size:.9rem;font-weight:600;color:var(--steel);}
+.topbar .nav-links a{padding:.35rem 0;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;}
+.topbar .nav-links a:hover{color:var(--ink);}
+.topbar .nav-actions{margin-left:auto;display:flex;gap:.5rem;align-items:center;}
+@media (max-width:900px){.topbar-inner{padding:0 1rem;}.topbar .nav-links{display:none;}}
+
+.hero{background:radial-gradient(900px 400px at 80% 20%, rgba(245,158,11,.12), transparent 60%),linear-gradient(180deg,var(--deep) 0%,var(--deep-2) 100%);color:#fff;padding:3.5rem 2rem 3rem;text-align:center;}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem .9rem;border:1px solid rgba(245,158,11,.4);border-radius:999px;background:rgba(245,158,11,.10);color:var(--amber);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.25rem;}
+.hero h1{color:#fff;font-size:clamp(1.75rem,4vw,2.75rem);line-height:1.15;letter-spacing:-.03em;margin:0 auto .9rem;max-width:800px;}
+.hero p{color:rgba(255,255,255,.78);font-size:1.05rem;line-height:1.7;max-width:640px;margin:0 auto 1.75rem;}
+.hero .count-chip{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.15rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;color:#fff;font-weight:700;font-size:.9rem;}
+.hero .count-chip i{color:var(--amber);}
+
+.container{max-width:1280px;margin:0 auto;padding:2.5rem 2rem 4rem;width:100%;flex:1;}
+@media (max-width:900px){.container{padding:1.5rem 1rem 3rem;}.hero{padding:2.5rem 1.25rem 2rem;}}
+
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.15rem;}
+@media (min-width:1400px){.jobs-grid{grid-template-columns:repeat(3,1fr);}}
+
+.job-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.5rem 1.6rem 1.35rem;display:flex;flex-direction:column;transition:transform .22s,box-shadow .22s,border-color .22s;position:relative;color:inherit;cursor:pointer;}
+.job-card:hover{transform:translateY(-3px);box-shadow:0 20px 40px -12px rgba(15,43,70,.15);border-color:rgba(245,158,11,.5);}
+.job-card::before{content:"";position:absolute;left:0;top:1.5rem;bottom:1.5rem;width:3px;background:var(--amber);border-radius:0 3px 3px 0;opacity:0;transform:scaleY(.4);transition:opacity .22s,transform .22s;}
+.job-card:hover::before{opacity:1;transform:scaleY(1);}
+
+.job-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1rem;}
+.job-title-block{flex:1;min-width:0;}
+.job-title-block h3{font-size:1.15rem;font-weight:800;color:var(--ink);margin:0 0 .35rem;line-height:1.3;}
+.job-title-block .company-name{display:inline-flex;align-items:center;gap:.4rem;color:var(--steel);font-size:.87rem;font-weight:500;}
+.job-title-block .company-name::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block;}
+.job-time{flex-shrink:0;text-align:right;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;white-space:nowrap;}
+.job-excerpt{color:var(--steel);font-size:.92rem;line-height:1.65;margin:0 0 1.15rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.job-meta-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+.job-meta-row .pill{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .75rem;border-radius:999px;font-size:.72rem;font-weight:700;background:var(--mist);color:var(--steel);}
+.job-meta-row .pill.amber{background:var(--amber-soft);color:var(--amber-dark);}
+.job-foot{margin-top:auto;padding-top:1.1rem;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center;gap:.75rem;}
+.job-foot .posted-line{font-size:.78rem;color:var(--muted);display:inline-flex;align-items:center;gap:.35rem;}
+.job-foot .posted-line i{color:var(--amber);}
+.job-foot .apply-link{font-size:.85rem;font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:.35rem;transition:gap .2s,color .2s;}
+.job-card:hover .apply-link{gap:.6rem;color:var(--amber-dark);}
+
+.empty-box{grid-column:1/-1;text-align:center;padding:5rem 1.5rem;background:var(--paper);border:1px dashed var(--line);border-radius:16px;color:var(--muted);}
+.empty-box i{font-size:2.75rem;color:var(--line);display:block;margin-bottom:1rem;}
+.empty-box h3{color:var(--ink);font-size:1.2rem;margin:0 0 .5rem;}
+
+.other-links{margin-top:3rem;padding:2rem;background:var(--paper);border:1px solid var(--line);border-radius:14px;}
+.other-links h3{font-size:1.1rem;color:var(--ink);margin:0 0 1rem;display:flex;align-items:center;gap:.5rem;}
+.other-links h3 i{color:var(--amber);}
+.chips{display:flex;flex-wrap:wrap;gap:.6rem;}
+.chips a{padding:.5rem 1rem;border-radius:999px;background:var(--mist);color:var(--slate);font-size:.85rem;font-weight:600;transition:background .15s,transform .15s;}
+.chips a:hover{background:var(--amber-soft);color:var(--amber-dark);transform:translateY(-1px);}
+
+.site-foot{background:var(--deep);color:rgba(255,255,255,.7);margin-top:4rem;padding:3rem 2rem 1.5rem;}
+.site-foot-inner{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;}
+@media (max-width:900px){.site-foot-inner{grid-template-columns:1fr 1fr;gap:2rem;}}
+@media (max-width:560px){.site-foot-inner{grid-template-columns:1fr;}}
+.site-foot h5{color:#fff;font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;margin:0 0 1.25rem;font-weight:800;}
+.site-foot a{display:block;color:rgba(255,255,255,.65);font-size:.88rem;padding:.3rem 0;}
+.site-foot a:hover{color:var(--amber);}
+.site-foot p{color:rgba(255,255,255,.6);font-size:.88rem;line-height:1.7;margin:0 0 1rem;}
+.site-foot .brand-logo{height:34px;margin-bottom:1.25rem;filter:brightness(0) invert(1);}
+.site-foot-bottom{max-width:1440px;margin:2rem auto 0;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.08);text-align:center;font-size:.8rem;color:rgba(255,255,255,.45);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="https://www.wera-iko.co.ke/home.html" class="logo">
+      <img src="https://www.wera-iko.co.ke/images/weraikologo.png" alt="Weraiko">
+    </a>
+    <nav class="nav-links">
+      <a href="https://www.wera-iko.co.ke/home.html">Home</a>
+      <a href="https://www.wera-iko.co.ke/index.html" class="active">Jobs</a>
+      <a href="https://www.wera-iko.co.ke/guides.html">Guides</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="https://www.wera-iko.co.ke/index.html" class="btn btn-ghost btn-sm">
+        <i class="bi bi-arrow-left"></i> All Jobs
+      </a>
+    </div>
+  </div>
+</div>
+
+<section class="hero">
+  <span class="eyebrow"><i class="bi bi-shield-check"></i> Verified Kenyan Jobs</span>
+  <h1>{{ heading }}</h1>
+  <p>{{ intro }}</p>
+  <div class="count-chip">
+    <i class="bi bi-briefcase-fill"></i>
+    {{ jobs.count }} job{{ jobs.count|pluralize }} available
+  </div>
+</section>
+
+<main class="container">
+  <div class="jobs-grid">
+    {% for job in jobs %}
+    <a href="/job/{{ job.slug }}/" class="job-card">
+      <div class="job-top">
+        <div class="job-title-block">
+          <h3>{{ job.title }}</h3>
+          <span class="company-name">{{ job.company }}</span>
+        </div>
+        <span class="job-time">{{ job.posted_date|timesince }} ago</span>
+      </div>
+      {% if job.description %}
+      <p class="job-excerpt">{{ job.description|truncatewords:25 }}</p>
+      {% endif %}
+      <div class="job-meta-row">
+        {% if job.job_type %}<span class="pill"><i class="bi bi-briefcase"></i>{{ job.get_job_type_display }}</span>{% endif %}
+        {% if job.education_level %}<span class="pill"><i class="bi bi-mortarboard"></i>{{ job.get_education_level_display }}</span>{% endif %}
+        {% if job.location %}<span class="pill amber"><i class="bi bi-geo-alt"></i>{{ job.location }}</span>{% endif %}
+      </div>
+      <div class="job-foot">
+        <span class="posted-line"><i class="bi bi-patch-check-fill"></i> Verified</span>
+        <span class="apply-link">View &amp; Apply <i class="bi bi-arrow-right"></i></span>
+      </div>
+    </a>
+    {% empty %}
+    <div class="empty-box">
+      <i class="bi bi-compass"></i>
+      <h3>No jobs in this category right now</h3>
+      <p>Check back soon — we publish new verified roles every day.</p>
+      <a href="https://www.wera-iko.co.ke/index.html" class="btn btn-amber" style="margin-top:1rem;">Browse all jobs</a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="other-links">
+    <h3><i class="bi bi-compass-fill"></i> Browse other categories</h3>
+    <div class="chips">
+      {% if page_kind == 'category' %}
+        <a href="/jobs/category/ict-jobs-in-kenya/">ICT &amp; IT</a>
+        <a href="/jobs/category/engineering-jobs-in-kenya/">Engineering</a>
+        <a href="/jobs/category/customer-service-jobs-in-kenya/">Customer Service</a>
+        <a href="/jobs/category/business-jobs-in-kenya/">Business &amp; Admin</a>
+        <a href="/jobs/category/hospitality-jobs-in-kenya/">Hospitality</a>
+        <a href="/jobs/category/health-jobs-in-kenya/">Health &amp; Medical</a>
+        <a href="/jobs/category/teaching-jobs-in-kenya/">Teaching</a>
+        <a href="/jobs/category/sales-jobs-in-kenya/">Sales &amp; Marketing</a>
+        <a href="/jobs/category/transport-jobs-in-kenya/">Transport</a>
+        <a href="/jobs/category/security-jobs-in-kenya/">Security</a>
+      {% else %}
+        <a href="/jobs/education/certificate-jobs-in-kenya/">Certificate Jobs</a>
+        <a href="/jobs/education/diploma-jobs-in-kenya/">Diploma Jobs</a>
+        <a href="/jobs/education/degree-jobs-in-kenya/">Degree Jobs</a>
+        <a href="/jobs/education/masters-jobs-in-kenya/">Masters Jobs</a>
+        <a href="/jobs/education/form-four-leavers-jobs/">Form Four Leaver Jobs</a>
+      {% endif %}
+    </div>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="site-foot-inner">
+    <div>
+      <img src="https://www.wera-iko.co.ke/images/weraikologo.png" alt="Weraiko" class="brand-logo">
+      <p>A Kenyan job board built for job seekers. Free, verified, and updated every day. No accounts required.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <a href="https://www.wera-iko.co.ke/index.html">All Jobs</a>
+      <a href="https://www.wera-iko.co.ke/guides.html">Career Guides</a>
+    </div>
+    <div>
+      <h5>Company</h5>
+      <a href="https://www.wera-iko.co.ke/home.html">Why Weraiko</a>
+      <a href="https://www.wera-iko.co.ke/about.html">About</a>
+    </div>
+    <div>
+      <h5>Contact</h5>
+      <a href="mailto:hello@wera-iko.co.ke">hello@wera-iko.co.ke</a>
+      <a href="tel:+254758301547">0758 301 547</a>
+    </div>
+  </div>
+  <div class="site-foot-bottom">
+    &copy; Weraiko 2026 — All rights reserved. Made with pride in Kenya.
+  </div>
+</footer>
+
+</body>
+</html>
