@@ -9,11 +9,15 @@ from django.http import Http404
 import html as html_module
 
 from .models import Job, Application, Guide
-from .serializers import JobSerializer, ApplicationSerializer
+from .serializers import (
+    JobSerializer, ApplicationSerializer,
+    GuideListSerializer, GuideDetailSerializer,
+)
 
-from .models import Guide
-from .serializers import GuideListSerializer, GuideDetailSerializer
 
+# ============================================================
+# Public API
+# ============================================================
 
 def active_jobs_qs():
     """All jobs that should be publicly visible right now."""
@@ -58,6 +62,7 @@ def job_apply(request, pk):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 def guide_list(request):
     """GET /api/guides/ — public list of published guides."""
@@ -72,22 +77,20 @@ def guide_detail(request, slug):
     try:
         guide = Guide.objects.get(slug=slug, is_published=True)
     except Guide.DoesNotExist:
-        return Response({'detail': 'Guide not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Guide not found.'},
+                        status=status.HTTP_404_NOT_FOUND)
     serializer = GuideDetailSerializer(guide, context={'request': request})
     return Response(serializer.data)
 
 
 # ============================================================
-# Server-rendered job page (for SEO + AI crawlers)
+# Server-rendered job page (SSR for SEO + AI crawlers)
 # ============================================================
-
-
 
 def _render_full_description(text):
     """Convert plain text with ## headings into safe HTML."""
     if not text:
         return ''
-    # Normalise line endings (Windows \r\n and Mac \r -> Unix \n)
     text = text.replace('\r\n', '\n').replace('\r', '\n')
     blocks = [b.strip() for b in text.split('\n\n') if b.strip()]
     parts = []
@@ -102,12 +105,22 @@ def _render_full_description(text):
             parts.append(f'<p>{html_module.escape(block)}</p>')
     return ''.join(parts)
 
+
 def job_page(request, slug):
+    """Server-rendered job detail page — fully crawlable by Google / AI."""
     job = get_object_or_404(Job, slug=slug)
+
+    related = (
+        Job.objects
+        .filter(is_active=True, category=job.category)
+        .exclude(pk=job.pk)
+        .order_by('-posted_date')[:3]
+    )
+
     return render(request, 'jobs/job_page.html', {
         'job': job,
-        'full_description_html': '',
-        'related_jobs': [],
+        'full_description_html': _render_full_description(job.full_description),
+        'related_jobs': related,
     })
 
 
@@ -147,13 +160,11 @@ def _seo_jobs_qs(**filters):
 
 
 def education_jobs(request, slug):
-    """SEO landing page: /jobs/education/<slug>/  (e.g. diploma-jobs-in-kenya)."""
+    """SEO landing page: /jobs/education/<slug>/."""
     if slug not in EDUCATION_SLUGS:
         raise Http404('Unknown education slug')
     level, heading = EDUCATION_SLUGS[slug]
-    jobs = _seo_jobs_qs(education_level=level)
 
-    # Also include empty-education jobs for certificate / form-four pages
     if level == 'CERTIFICATE':
         from django.db.models import Q
         jobs = (
@@ -162,6 +173,8 @@ def education_jobs(request, slug):
             .filter(Q(education_level='CERTIFICATE') | Q(education_level=''))
             .order_by('-posted_date')
         )
+    else:
+        jobs = _seo_jobs_qs(education_level=level)
 
     return render(request, 'jobs/seo_landing.html', {
         'jobs': jobs,
@@ -176,7 +189,7 @@ def education_jobs(request, slug):
 
 
 def category_jobs(request, slug):
-    """SEO landing page: /jobs/category/<slug>/  (e.g. ict-jobs-in-kenya)."""
+    """SEO landing page: /jobs/category/<slug>/."""
     if slug not in CATEGORY_SLUGS:
         raise Http404('Unknown category slug')
     category, heading = CATEGORY_SLUGS[slug]
@@ -191,9 +204,4 @@ def category_jobs(request, slug):
         ),
         'canonical_url': f'https://www.wera-iko.co.ke/jobs/category/{slug}/',
         'page_kind': 'category',
-    })
-    return render(request, 'jobs/job_page.html', {
-        'job': job,
-        'full_description_html': _render_full_description(job.full_description),
-        'related_jobs': related,
     })
