@@ -104,7 +104,16 @@ def _render_full_description(text):
 def job_page(request, slug):
     """Server-rendered job detail page — fully crawlable by Google / AI."""
     job = get_object_or_404(Job, slug=slug)
+
+    related = (
+        Job.objects
+        .filter(is_active=True, category=job.category)
+        .exclude(pk=job.pk)
+        .order_by('-posted_date')[:3]
+    )
+
     return render(request, 'jobs/job_page.html', {
         'job': job,
         'full_description_html': _render_full_description(job.full_description),
-    })    
+        'related_jobs': related,
+    })
