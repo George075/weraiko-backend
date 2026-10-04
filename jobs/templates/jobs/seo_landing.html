@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ heading }} | Weraiko</title>
+<title>{{ heading }} 2026 | Weraiko</title>
 <meta name="description" content="{{ intro }}">
 <link rel="canonical" href="{{ canonical_url }}">
 <meta name="robots" content="index, follow">
@@ -13,6 +13,17 @@
 <meta property="og:description" content="{{ intro }}">
 <meta property="og:url" content="{{ canonical_url }}">
 <meta property="og:site_name" content="Weraiko">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://www.wera-iko.co.ke/"},
+    {"@type":"ListItem","position":2,"name":"Jobs","item":"https://www.wera-iko.co.ke/index.html"},
+    {"@type":"ListItem","position":3,"name":"{{ heading }}","item":"{{ canonical_url }}"}
+  ]
+}
+</script>  
 
 <link rel="icon" href="https://www.wera-iko.co.ke/images/weraikologo.png">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
