@@ -11,4 +11,6 @@ urlpatterns = [
     path('guides/', views.guide_list, name='guide_list'),
     path('guides/<slug:slug>/', views.guide_detail, name='guide_detail'),
     path('jobs/location/<slug:slug>/', views.location_jobs, name='location_jobs'),
+    path('companies/', views.companies_index, name='companies_index'),
+    path('companies/<slug:slug>/', views.company_jobs, name='company_jobs'),
 ]
