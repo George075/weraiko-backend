@@ -186,7 +186,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
   <div class="other-links">
     <h3><i class="bi bi-compass-fill"></i> Browse other categories</h3>
     <div class="chips">
-      {% if page_kind == 'category' %}
+        {% if page_kind == 'category' %}
         <a href="/jobs/category/ict-jobs-in-kenya/">ICT &amp; IT</a>
         <a href="/jobs/category/engineering-jobs-in-kenya/">Engineering</a>
         <a href="/jobs/category/customer-service-jobs-in-kenya/">Customer Service</a>
@@ -197,12 +197,30 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
         <a href="/jobs/category/sales-jobs-in-kenya/">Sales &amp; Marketing</a>
         <a href="/jobs/category/transport-jobs-in-kenya/">Transport</a>
         <a href="/jobs/category/security-jobs-in-kenya/">Security</a>
-      {% else %}
+
+       {% elif page_kind == 'education' %}
         <a href="/jobs/education/certificate-jobs-in-kenya/">Certificate Jobs</a>
         <a href="/jobs/education/diploma-jobs-in-kenya/">Diploma Jobs</a>
         <a href="/jobs/education/degree-jobs-in-kenya/">Degree Jobs</a>
         <a href="/jobs/education/masters-jobs-in-kenya/">Masters Jobs</a>
         <a href="/jobs/education/form-four-leavers-jobs/">Form Four Leaver Jobs</a>
+
+       {% elif page_kind == 'location' %}
+        <a href="/jobs/location/nairobi-jobs/">Nairobi</a>
+        <a href="/jobs/location/mombasa-jobs/">Mombasa</a>
+        <a href="/jobs/location/kisumu-jobs/">Kisumu</a>
+        <a href="/jobs/location/nakuru-jobs/">Nakuru</a>
+        <a href="/jobs/location/eldoret-jobs/">Eldoret</a>
+        <a href="/jobs/location/thika-jobs/">Thika</a>
+        <a href="/jobs/location/athi-river-jobs/">Athi River</a>
+        <a href="/jobs/location/kajiado-jobs/">Kajiado</a>
+        <a href="/jobs/location/machakos-jobs/">Machakos</a>
+        <a href="/jobs/location/meru-jobs/">Meru</a>
+        <a href="/jobs/location/kisii-jobs/">Kisii</a>
+        <a href="/jobs/location/kericho-jobs/">Kericho</a>
+        <a href="/jobs/location/nyeri-jobs/">Nyeri</a>
+        <a href="/jobs/location/embu-jobs/">Embu</a>
+        <a href="/jobs/location/kitui-jobs/">Kitui</a>
       {% endif %}
     </div>
   </div>
