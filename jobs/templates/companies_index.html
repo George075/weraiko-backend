@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Companies Hiring in Kenya | Weraiko</title>
+<meta name="description" content="Browse {{ total_companies }} companies hiring in Kenya with {{ total_jobs }} active job openings. Free to apply.">
+<link rel="canonical" href="https://wera-iko.co.ke/companies/">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="https://www.wera-iko.co.ke/images/weraikologo.png">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+:root{--ink:#0b1220;--steel:#475569;--mist:#f6f7fb;--paper:#fff;--line:#e5e7eb;--amber:#f59e0b;--amber-dark:#d97706;--amber-soft:#fef3c7;--deep:#0f2b46;--deep-2:#143b5c;}
+*{box-sizing:border-box;}
+body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--mist);color:#1e293b;margin:0;min-height:100vh;display:flex;flex-direction:column;font-size:15px;line-height:1.65;}
+a{text-decoration:none;color:inherit;}
+h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.15;}
+.btn{display:inline-flex;align-items:center;gap:.45rem;padding:.65rem 1.15rem;border-radius:10px;font-weight:600;font-size:.9rem;border:1px solid transparent;text-decoration:none;}
+.btn-sm{padding:.45rem .9rem;font-size:.82rem;border-radius:8px;}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:#475569;}
+.topbar{background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1200;}
+.topbar-inner{max-width:1280px;margin:0 auto;padding:0 2rem;height:68px;display:flex;align-items:center;gap:1.5rem;}
+.topbar .logo img{height:36px;display:block;}
+.topbar .nav-links{display:flex;gap:1.75rem;font-size:.9rem;font-weight:600;color:var(--steel);}
+.topbar .nav-links a{padding:.35rem 0;border-bottom:2px solid transparent;}
+.topbar .nav-links a:hover{color:var(--ink);}
+.topbar .nav-actions{margin-left:auto;display:flex;gap:.5rem;align-items:center;}
+@media (max-width:900px){.topbar-inner{padding:0 1rem;}.topbar .nav-links{display:none;}}
+.hero{background:radial-gradient(900px 400px at 80% 20%, rgba(245,158,11,.12), transparent 60%),linear-gradient(180deg,var(--deep) 0%,var(--deep-2) 100%);color:#fff;padding:3.5rem 2rem 3rem;text-align:center;}
+.hero h1{color:#fff;font-size:clamp(1.75rem,4vw,2.75rem);margin:0 auto .9rem;max-width:800px;}
+.hero p{color:rgba(255,255,255,.78);font-size:1.05rem;max-width:640px;margin:0 auto 1.75rem;}
+.hero .stats{display:inline-flex;gap:2rem;padding:.75rem 1.5rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:999px;}
+.hero .stats div{text-align:center;}
+.hero .stats strong{display:block;color:#fff;font-size:1.5rem;line-height:1;}
+.hero .stats span{color:rgba(255,255,255,.7);font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
+.container{max-width:1280px;margin:0 auto;padding:2.5rem 2rem 4rem;width:100%;flex:1;}
+@media (max-width:900px){.container{padding:1.5rem 1rem 3rem;}.hero{padding:2.5rem 1.25rem 2rem;}}
+.companies-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.15rem;}
+.company-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.5rem;display:flex;align-items:center;gap:1rem;transition:transform .22s,box-shadow .22s,border-color .22s;}
+.company-card:hover{transform:translateY(-3px);box-shadow:0 20px 40px -14px rgba(15,43,70,.15);border-color:rgba(245,158,11,.5);}
+.company-badge{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--deep),var(--deep-2));color:#fff;font-weight:800;font-size:1.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.company-info{flex:1;min-width:0;}
+.company-info h3{font-size:1rem;margin:0 0 .2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.company-info p{color:var(--muted);font-size:.82rem;margin:0;}
+.site-foot{background:var(--deep);color:rgba(255,255,255,.7);padding:3rem 2rem 1.5rem;text-align:center;font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="https://www.wera-iko.co.ke/home.html" class="logo">
+      <img src="https://www.wera-iko.co.ke/images/weraikologo.png" alt="Weraiko">
+    </a>
+    <nav class="nav-links">
+      <a href="https://www.wera-iko.co.ke/home.html">Home</a>
+      <a href="https://www.wera-iko.co.ke/index.html">Jobs</a>
+      <a href="/companies/" class="active">Companies</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="https://www.wera-iko.co.ke/index.html" class="btn btn-amber btn-sm">
+        <i class="bi bi-briefcase"></i> Browse Jobs
+      </a>
+    </div>
+  </div>
+</div>
+
+<section class="hero">
+  <h1>Companies Hiring in Kenya</h1>
+  <p>Browse {{ total_companies }} verified employers with {{ total_jobs }} active job openings.</p>
+  <div class="stats">
+    <div>
+      <strong>{{ total_companies }}</strong>
+      <span>Companies</span>
+    </div>
+    <div>
+      <strong>{{ total_jobs }}</strong>
+      <span>Jobs</span>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="companies-grid">
+    {% for c in companies %}
+    <a href="/companies/{{ c.slug }}/" class="company-card">
+      <div class="company-badge">{{ c.name|slice:":1"|upper }}</div>
+      <div class="company-info">
+        <h3>{{ c.name }}</h3>
+        <p>{{ c.count }} open {{ c.count|pluralize:"role,roles" }}</p>
+      </div>
+    </a>
+    {% empty %}
+    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);">
+      <i class="bi bi-building" style="font-size:3rem;display:block;margin-bottom:1rem;"></i>
+      <p>No companies with active jobs yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+
+<footer class="site-foot">
+  &copy; Weraiko 2026 — Verified Kenyan Jobs
+</footer>
+
+</body>
+</html>
