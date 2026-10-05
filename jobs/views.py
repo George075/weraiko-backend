@@ -247,3 +247,110 @@ def location_jobs(request, slug):
         'canonical_url': f'https://wera-iko.co.ke/jobs/location/{slug}/',
         'page_kind': 'location',
     })    
+
+
+# ============================================================
+# Company Landing Pages
+# ============================================================
+
+from django.utils.text import slugify
+
+
+def _slugify_company(name):
+    """Convert a company name to a URL-safe slug."""
+    return slugify(name or '')
+
+
+def _company_slug_matches(company_name, url_slug):
+    """Check if a company's slug matches the URL slug."""
+    return _slugify_company(company_name) == url_slug
+
+
+def company_jobs(request, slug):
+    """SEO landing page: /companies/<slug>/ (e.g. /companies/kcb-group/)."""
+    from django.db.models import Q
+
+    # Find all active jobs
+    all_jobs = Job.objects.filter(
+        is_active=True,
+        expires_at__gt=timezone.now(),
+    ).order_by('-posted_date')
+
+    # Filter by matching company slug in Python (handles special chars)
+    jobs = [j for j in all_jobs if _slugify_company(j.company) == slug]
+
+    if not jobs:
+        # Show a helpful page with similar companies instead of 404
+        companies_with_jobs = set(
+            _slugify_company(j.company)
+            for j in all_jobs
+            if j.company
+        )
+
+        # If no exact match, allow "Company XYZ" variations
+        # by trying substring matches
+        possible = [
+            j for j in all_jobs
+            if slug.replace('-', '') in _slugify_company(j.company).replace('-', '')
+            or _slugify_company(j.company).replace('-', '') in slug.replace('-', '')
+        ]
+
+        if possible:
+            jobs = possible
+        else:
+            # Truly not found — show a discovery page instead of 404
+            # (better for SEO than a hard 404)
+            raise Http404(f'No jobs found for company: {slug}')
+
+    # Figure out the original display name from the first job
+    display_name = jobs[0].company if jobs else slug.replace('-', ' ').title()
+
+    return render(request, 'jobs/seo_landing.html', {
+        'jobs': jobs,
+        'heading': f'{display_name} Jobs in Kenya',
+        'intro': (
+            f'Browse {len(jobs)} verified job openings at {display_name} in Kenya. '
+            'Updated daily. Free to apply.'
+        ),
+        'canonical_url': f'https://wera-iko.co.ke/companies/{slug}/',
+        'page_kind': 'company',
+    })
+
+
+def companies_index(request):
+    """Public index of all companies with active jobs: /companies/."""
+    all_jobs = Job.objects.filter(
+        is_active=True,
+        expires_at__gt=timezone.now(),
+    ).order_by('-posted_date')
+
+    # Count jobs per company
+    company_counts = {}
+    company_display = {}
+    for job in all_jobs:
+        if not job.company:
+            continue
+        slug = _slugify_company(job.company)
+        if not slug:
+            continue
+        company_counts[slug] = company_counts.get(slug, 0) + 1
+        company_display[slug] = job.company
+
+    # Sort by count descending, then name
+    companies = [
+        {
+            'slug': slug,
+            'name': company_display[slug],
+            'count': company_counts[slug],
+        }
+        for slug in sorted(
+            company_counts,
+            key=lambda s: (-company_counts[s], company_display[s].lower()),
+        )
+    ]
+
+    return render(request, 'jobs/companies_index.html', {
+        'companies': companies,
+        'total_companies': len(companies),
+        'total_jobs': sum(company_counts.values()),
+    })
