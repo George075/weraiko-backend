@@ -205,3 +205,45 @@ def category_jobs(request, slug):
         'canonical_url': f'https://www.wera-iko.co.ke/jobs/category/{slug}/',
         'page_kind': 'category',
     })
+
+
+# ============================================================
+# Location Landing Pages
+# ============================================================
+
+LOCATION_SLUGS = {
+    'nairobi-jobs':      ('Nairobi, Kenya',   'Jobs in Nairobi'),
+    'mombasa-jobs':      ('Mombasa, Kenya',   'Jobs in Mombasa'),
+    'kisumu-jobs':       ('Kisumu, Kenya',    'Jobs in Kisumu'),
+    'nakuru-jobs':       ('Nakuru, Kenya',    'Jobs in Nakuru'),
+    'eldoret-jobs':      ('Eldoret, Kenya',   'Jobs in Eldoret'),
+    'thika-jobs':        ('Thika, Kenya',     'Jobs in Thika'),
+    'athi-river-jobs':   ('Athi River, Kenya','Jobs in Athi River'),
+    'kajiado-jobs':      ('Kajiado, Kenya',   'Jobs in Kajiado'),
+    'machakos-jobs':     ('Machakos, Kenya',  'Jobs in Machakos'),
+    'meru-jobs':         ('Meru, Kenya',      'Jobs in Meru'),
+    'kisii-jobs':        ('Kisii, Kenya',     'Jobs in Kisii'),
+    'kericho-jobs':      ('Kericho, Kenya',   'Jobs in Kericho'),
+    'nyeri-jobs':        ('Nyeri, Kenya',     'Jobs in Nyeri'),
+    'embu-jobs':         ('Embu, Kenya',      'Jobs in Embu'),
+    'kitui-jobs':        ('Kitui, Kenya',     'Jobs in Kitui'),
+}
+
+
+def location_jobs(request, slug):
+    """SEO landing page: /jobs/location/<slug>/ (e.g. nairobi-jobs)."""
+    if slug not in LOCATION_SLUGS:
+        raise Http404('Unknown location slug')
+    location, heading = LOCATION_SLUGS[slug]
+    jobs = _seo_jobs_qs(location=location)
+
+    return render(request, 'jobs/seo_landing.html', {
+        'jobs': jobs,
+        'heading': heading,
+        'intro': (
+            f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
+            'No sign-up required. Free to apply.'
+        ),
+        'canonical_url': f'https://wera-iko.co.ke/jobs/location/{slug}/',
+        'page_kind': 'location',
+    })    
