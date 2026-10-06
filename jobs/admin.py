@@ -5,12 +5,12 @@ from .models import Job, Application, Guide
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'company', 'category', 'job_type',
+        'title', 'company', 'category', 'secondary_category', 'job_type',
         'education_level', 'location',
         'posted_date', 'expires_at', 'is_active'
     )
     list_filter = (
-        'category', 'job_type', 'education_level',
+        'category', 'secondary_category', 'job_type', 'education_level',
         'application_type', 'is_active', 'organization'
     )
     search_fields = ('title', 'company', 'location')
@@ -19,7 +19,8 @@ class JobAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Core', {
             'fields': (
-                'title', 'category', 'company', 'organization',
+                'title', 'category', 'secondary_category',
+                'company', 'organization',
                 'location', 'source',
             )
         }),
