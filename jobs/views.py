@@ -6,7 +6,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404
+from django.db.models import Q
+from django.utils.text import slugify
 import html as html_module
+import re
 
 from .models import Job, Application, Guide
 from .serializers import (
@@ -84,7 +87,7 @@ def guide_detail(request, slug):
 
 
 # ============================================================
-# Server-rendered job page (SSR for SEO + AI crawlers)
+# Helpers — full description + custom text link extraction
 # ============================================================
 
 def _render_full_description(text):
@@ -106,6 +109,36 @@ def _render_full_description(text):
     return ''.join(parts)
 
 
+def _extract_link(text):
+    """Extract the first email or URL from custom text.
+    Returns (kind, value) where kind is 'email' | 'link' | None."""
+    if not text:
+        return (None, None)
+
+    email_match = re.search(
+        r'\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})\b',
+        text,
+    )
+    if email_match:
+        return ('email', email_match.group(1))
+
+    url_match = re.search(
+        r'((?:https?://|www\.)[^\s<>"\']+)',
+        text,
+    )
+    if url_match:
+        url = url_match.group(1).rstrip('.,;:)!?')
+        if not url.startswith('http'):
+            url = 'https://' + url
+        return ('link', url)
+
+    return (None, None)
+
+
+# ============================================================
+# Server-rendered job detail page (SSR)
+# ============================================================
+
 def job_page(request, slug):
     """Server-rendered job detail page — fully crawlable by Google / AI."""
     job = get_object_or_404(Job, slug=slug)
@@ -117,10 +150,18 @@ def job_page(request, slug):
         .order_by('-posted_date')[:3]
     )
 
+    # If application_type is CUSTOM but there is a URL or email in the
+    # custom text, extract it so the template can render an apply button.
+    auto_kind, auto_target = (None, None)
+    if job.application_type == 'CUSTOM' and job.application_custom_text:
+        auto_kind, auto_target = _extract_link(job.application_custom_text)
+
     return render(request, 'jobs/job_page.html', {
         'job': job,
         'full_description_html': _render_full_description(job.full_description),
         'related_jobs': related,
+        'auto_apply_kind': auto_kind,
+        'auto_apply_target': auto_target,
     })
 
 
@@ -168,7 +209,6 @@ def education_jobs(request, slug):
     level, heading = EDUCATION_SLUGS[slug]
 
     if level == 'CERTIFICATE':
-        from django.db.models import Q
         jobs = (
             Job.objects
             .filter(is_active=True, expires_at__gt=timezone.now())
@@ -185,14 +225,13 @@ def education_jobs(request, slug):
             f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
             'No sign-up required. Free to apply.'
         ),
-        'canonical_url': f'https://www.wera-iko.co.ke/jobs/education/{slug}/',
+        'canonical_url': f'https://wera-iko.co.ke/jobs/education/{slug}/',
         'page_kind': 'education',
     })
 
 
 def category_jobs(request, slug):
     """SEO landing page: /jobs/category/<slug>/."""
-    from django.db.models import Q
     if slug not in CATEGORY_SLUGS:
         raise Http404('Unknown category slug')
     category, heading = CATEGORY_SLUGS[slug]
@@ -256,63 +295,40 @@ def location_jobs(request, slug):
         ),
         'canonical_url': f'https://wera-iko.co.ke/jobs/location/{slug}/',
         'page_kind': 'location',
-    })    
+    })
 
 
 # ============================================================
 # Company Landing Pages
 # ============================================================
 
-from django.utils.text import slugify
-
-
 def _slugify_company(name):
     """Convert a company name to a URL-safe slug."""
     return slugify(name or '')
 
 
-def _company_slug_matches(company_name, url_slug):
-    """Check if a company's slug matches the URL slug."""
-    return _slugify_company(company_name) == url_slug
-
-
 def company_jobs(request, slug):
     """SEO landing page: /companies/<slug>/ (e.g. /companies/kcb-group/)."""
-    from django.db.models import Q
-
-    # Find all active jobs
     all_jobs = Job.objects.filter(
         is_active=True,
         expires_at__gt=timezone.now(),
     ).order_by('-posted_date')
 
-    # Filter by matching company slug in Python (handles special chars)
+    # Match by slugified company name
     jobs = [j for j in all_jobs if _slugify_company(j.company) == slug]
 
     if not jobs:
-        # Show a helpful page with similar companies instead of 404
-        companies_with_jobs = set(
-            _slugify_company(j.company)
-            for j in all_jobs
-            if j.company
-        )
-
-        # If no exact match, allow "Company XYZ" variations
-        # by trying substring matches
+        # Try substring matches (handles "Company XYZ" vs "Company-XYZ")
         possible = [
             j for j in all_jobs
             if slug.replace('-', '') in _slugify_company(j.company).replace('-', '')
             or _slugify_company(j.company).replace('-', '') in slug.replace('-', '')
         ]
-
         if possible:
             jobs = possible
         else:
-            # Truly not found — show a discovery page instead of 404
-            # (better for SEO than a hard 404)
             raise Http404(f'No jobs found for company: {slug}')
 
-    # Figure out the original display name from the first job
     display_name = jobs[0].company if jobs else slug.replace('-', ' ').title()
 
     return render(request, 'jobs/seo_landing.html', {
@@ -334,7 +350,6 @@ def companies_index(request):
         expires_at__gt=timezone.now(),
     ).order_by('-posted_date')
 
-    # Count jobs per company
     company_counts = {}
     company_display = {}
     for job in all_jobs:
@@ -346,7 +361,6 @@ def companies_index(request):
         company_counts[slug] = company_counts.get(slug, 0) + 1
         company_display[slug] = job.company
 
-    # Sort by count descending, then name
     companies = [
         {
             'slug': slug,
