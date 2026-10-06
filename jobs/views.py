@@ -141,6 +141,8 @@ CATEGORY_SLUGS = {
     'engineering-jobs-in-kenya':      ('Engineering',               'Engineering Jobs in Kenya'),
     'customer-service-jobs-in-kenya': ('Customer Service',          'Customer Service Jobs in Kenya'),
     'business-jobs-in-kenya':         ('Business & Administration', 'Business & Admin Jobs in Kenya'),
+    'hr-jobs-in-kenya':               ('Human Resources (HR)',      'Human Resources (HR) Jobs in Kenya'),
+    'finance-jobs-in-kenya':          ('Finance & Accounting',      'Finance & Accounting Jobs in Kenya'),
     'hospitality-jobs-in-kenya':      ('Hospitality & Tourism',     'Hospitality & Tourism Jobs in Kenya'),
     'health-jobs-in-kenya':           ('Health & Medicine',         'Health & Medical Jobs in Kenya'),
     'teaching-jobs-in-kenya':         ('Education & Teaching',      'Teaching Jobs in Kenya'),
@@ -190,10 +192,18 @@ def education_jobs(request, slug):
 
 def category_jobs(request, slug):
     """SEO landing page: /jobs/category/<slug>/."""
+    from django.db.models import Q
     if slug not in CATEGORY_SLUGS:
         raise Http404('Unknown category slug')
     category, heading = CATEGORY_SLUGS[slug]
-    jobs = _seo_jobs_qs(category=category)
+
+    # Match jobs whose primary OR secondary category equals this category
+    jobs = (
+        Job.objects
+        .filter(is_active=True, expires_at__gt=timezone.now())
+        .filter(Q(category=category) | Q(secondary_category=category))
+        .order_by('-posted_date')
+    )
 
     return render(request, 'jobs/seo_landing.html', {
         'jobs': jobs,
@@ -202,7 +212,7 @@ def category_jobs(request, slug):
             f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
             'No sign-up required. Free to apply.'
         ),
-        'canonical_url': f'https://www.wera-iko.co.ke/jobs/category/{slug}/',
+        'canonical_url': f'https://wera-iko.co.ke/jobs/category/{slug}/',
         'page_kind': 'category',
     })
 
