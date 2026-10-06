@@ -174,7 +174,7 @@ EDUCATION_SLUGS = {
     'diploma-jobs-in-kenya':      ('DIPLOMA',     'Diploma Jobs in Kenya'),
     'degree-jobs-in-kenya':       ('BACHELOR',    'Degree Jobs in Kenya'),
     'masters-jobs-in-kenya':      ('MASTERS',     "Master's Jobs in Kenya"),
-    'form-four-leavers-jobs':     ('CERTIFICATE', 'Form Four Leaver Jobs in Kenya'),
+    'form-four-leavers-jobs':     ('__BLANK__', 'Form Four Leaver Jobs in Kenya'),
 }
 
 CATEGORY_SLUGS = {
@@ -208,11 +208,12 @@ def education_jobs(request, slug):
         raise Http404('Unknown education slug')
     level, heading = EDUCATION_SLUGS[slug]
 
-    if level == 'CERTIFICATE':
+    if level == '__BLANK__':
+        # Form Four Leavers → jobs with no education_level specified
         jobs = (
             Job.objects
             .filter(is_active=True, expires_at__gt=timezone.now())
-            .filter(Q(education_level='CERTIFICATE') | Q(education_level=''))
+            .filter(Q(education_level='') | Q(education_level__isnull=True))
             .order_by('-posted_date')
         )
     else:
@@ -225,10 +226,9 @@ def education_jobs(request, slug):
             f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
             'No sign-up required. Free to apply.'
         ),
-        'canonical_url': f'https://wera-iko.co.ke/jobs/education/{slug}/',
+        'canonical_url': f'https://www.wera-iko.co.ke/jobs/education/{slug}/',
         'page_kind': 'education',
     })
-
 
 def category_jobs(request, slug):
     """SEO landing page: /jobs/category/<slug>/."""
