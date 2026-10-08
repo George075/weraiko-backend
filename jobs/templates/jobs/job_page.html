@@ -130,7 +130,17 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
   <a href="https://www.wera-iko.co.ke/index.html" class="back-link">
     <i class="bi bi-arrow-left"></i> Back to all jobs
   </a>
-
+  {% if job.deadline and job.deadline < today %}
+  <div style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;padding:1rem 1.25rem;border-radius:12px;margin-bottom:1.5rem;font-size:.95rem;display:flex;gap:.65rem;align-items:flex-start;">
+    <i class="bi bi-clock-history" style="font-size:1.1rem;flex-shrink:0;margin-top:.1rem;"></i>
+    <span><strong>Application deadline was {{ job.deadline|date:"jS F Y" }}.</strong> This job may no longer be accepting applications. Browse similar jobs below.</span>
+  </div>
+  {% elif job.is_expired %}
+  <div style="background:#fee2e2;border:1px solid #fecaca;color:#991b1b;padding:1rem 1.25rem;border-radius:12px;margin-bottom:1.5rem;font-size:.95rem;display:flex;gap:.65rem;align-items:flex-start;">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size:1.1rem;flex-shrink:0;margin-top:.1rem;"></i>
+    <span><strong>This listing expired on {{ job.expires_at|date:"jS F Y" }}.</strong> Browse similar jobs below or <a href="https://www.wera-iko.co.ke/index.html" style="color:#991b1b;text-decoration:underline;">view all active jobs</a>.</span>
+  </div>
+  {% endif %}
   <div class="job-header">
     <div class="job-header-top">
       {% if job.company %}
@@ -178,6 +188,12 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
           </ul>
         {% endif %}
 
+        {% if job.is_expired or job.deadline and job.deadline < today %}
+        <div class="apply-card" style="background:#fef2f2;border-color:#fecaca;border-left-color:#dc2626;">
+          <h3 style="color:#991b1b;"><i class="bi bi-x-circle-fill"></i> Applications Closed</h3>
+          <p style="color:#991b1b;margin:0;">This position is no longer accepting applications. Scroll down for similar jobs still open.</p>
+        </div>
+        {% else %}
         <div class="apply-card">
           <h3><i class="bi bi-send-fill"></i> How to Apply</h3>
 
@@ -211,7 +227,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
 
           {% endif %}
         </div>
-      </div>
+        {% endif %}
     </div>
 
     <aside class="sidebar">
