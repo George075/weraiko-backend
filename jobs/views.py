@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
@@ -143,15 +143,22 @@ def job_page(request, slug):
     """Server-rendered job detail page — fully crawlable by Google / AI."""
     job = get_object_or_404(Job, slug=slug)
 
+    # Related jobs — same category, still active
     related = (
         Job.objects
-        .filter(is_active=True, category=job.category)
+        .filter(is_active=True, expires_at__gt=timezone.now(), category=job.category)
         .exclude(pk=job.pk)
         .order_by('-posted_date')[:3]
     )
+    # Fallback: if no matches in same category, show latest active jobs
+    if not related:
+        related = (
+            Job.objects
+            .filter(is_active=True, expires_at__gt=timezone.now())
+            .exclude(pk=job.pk)
+            .order_by('-posted_date')[:3]
+        )
 
-    # If application_type is CUSTOM but there is a URL or email in the
-    # custom text, extract it so the template can render an apply button.
     auto_kind, auto_target = (None, None)
     if job.application_type == 'CUSTOM' and job.application_custom_text:
         auto_kind, auto_target = _extract_link(job.application_custom_text)
@@ -162,6 +169,7 @@ def job_page(request, slug):
         'related_jobs': related,
         'auto_apply_kind': auto_kind,
         'auto_apply_target': auto_target,
+        'today': date.today(),
     })
 
 
