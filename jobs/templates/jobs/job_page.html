@@ -58,8 +58,11 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
 .meta-chip i{color:var(--amber);font-size:.9rem;}
 .meta-chip.amber{background:var(--amber-soft);color:var(--amber-dark);}
 .meta-chip.amber i{color:var(--amber-dark);}
+
+/* Two-column layout: content on left, sidebar on right */
 .detail-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:2rem;align-items:start;}
 @media (max-width:1000px){.detail-grid{grid-template-columns:1fr;}.sidebar{position:static !important;}}
+
 .content-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:2.5rem 2.5rem 2rem;min-width:0;}
 @media (max-width:700px){.content-card{padding:1.5rem 1.35rem;}}
 .content-card h2{display:flex;align-items:center;gap:.6rem;font-size:1.15rem;color:var(--ink);margin:2.25rem 0 1rem;padding-bottom:.75rem;border-bottom:2px solid var(--line-soft);}
@@ -72,6 +75,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
 .apply-card h3{display:flex;align-items:center;gap:.55rem;color:var(--ink);font-size:1.1rem;font-weight:800;margin:0 0 1rem;}
 .apply-card h3 i{color:var(--amber-dark);}
 .apply-custom-text{background:var(--paper);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:1.25rem 1.35rem;font-size:1rem;line-height:1.75;color:var(--ink);white-space:pre-wrap;word-break:break-word;}
+
 .sidebar{display:flex;flex-direction:column;gap:1.25rem;position:sticky;top:96px;min-width:0;}
 .sidebar-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:1.5rem 1.5rem 1.35rem;}
 .sidebar-card h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:0 0 1.1rem;font-weight:800;}
@@ -83,6 +87,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
 .summary-item .value{color:var(--ink);font-weight:700;text-align:right;max-width:60%;word-break:break-word;}
 .apply-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:1rem;background:var(--ink);color:#fff;border-radius:12px;font-weight:700;font-size:.95rem;text-decoration:none;}
 .apply-btn:hover{background:#000;color:#fff;}
+
 .related-section{margin-top:3rem;}
 .related-section h3{display:flex;align-items:center;gap:.6rem;font-size:1.15rem;color:var(--ink);margin:0 0 1.25rem;}
 .related-section h3 i{color:var(--amber);}
@@ -94,6 +99,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
 .related-card .related-company::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;}
 .related-card .related-meta{display:flex;gap:.4rem;flex-wrap:wrap;}
 .related-card .related-meta span{padding:.25rem .65rem;border-radius:999px;background:var(--mist);color:var(--steel);font-size:.7rem;font-weight:700;}
+
 .site-foot{background:var(--deep);color:rgba(255,255,255,.7);margin-top:4rem;padding:3rem 2rem 1.5rem;}
 .site-foot-inner{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;}
 @media (max-width:900px){.site-foot-inner{grid-template-columns:1fr 1fr;gap:2rem;}}
@@ -130,6 +136,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
   <a href="https://www.wera-iko.co.ke/index.html" class="back-link">
     <i class="bi bi-arrow-left"></i> Back to all jobs
   </a>
+
   {% if job.deadline and job.deadline < today %}
   <div style="background:#fef3c7;border:1px solid #fde68a;color:#92400e;padding:1rem 1.25rem;border-radius:12px;margin-bottom:1.5rem;font-size:.95rem;display:flex;gap:.65rem;align-items:flex-start;">
     <i class="bi bi-clock-history" style="font-size:1.1rem;flex-shrink:0;margin-top:.1rem;"></i>
@@ -141,6 +148,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
     <span><strong>This listing expired on {{ job.expires_at|date:"jS F Y" }}.</strong> Browse similar jobs below or <a href="https://www.wera-iko.co.ke/index.html" style="color:#991b1b;text-decoration:underline;">view all active jobs</a>.</span>
   </div>
   {% endif %}
+
   <div class="job-header">
     <div class="job-header-top">
       {% if job.company %}
@@ -164,72 +172,71 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
     </div>
   </div>
 
+  {# ================= TWO-COLUMN LAYOUT ================= #}
   <div class="detail-grid">
-    <div>
-      <div class="content-card">
-        {% if full_description_html %}
-          {{ full_description_html|safe }}
-        {% elif job.description %}
-          <h2>About this role</h2>
-          <p>{{ job.description }}</p>
+
+    {# LEFT COLUMN — description + responsibilities + qualifications + apply card #}
+    <div class="content-card">
+      {% if full_description_html %}
+        {{ full_description_html|safe }}
+      {% elif job.description %}
+        <h2>About this role</h2>
+        <p>{{ job.description }}</p>
+      {% endif %}
+
+      {% if job.responsibilities %}
+        <h2><i class="bi bi-list-check"></i>Responsibilities</h2>
+        <ul>
+          {% for r in job.responsibilities %}<li>{{ r }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if job.qualifications %}
+        <h2><i class="bi bi-mortarboard-fill"></i>Qualifications &amp; Requirements</h2>
+        <ul>
+          {% for q in job.qualifications %}<li>{{ q }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if job.is_expired or job.deadline and job.deadline < today %}
+      <div class="apply-card" style="background:#fef2f2;border-color:#fecaca;border-left-color:#dc2626;">
+        <h3 style="color:#991b1b;"><i class="bi bi-x-circle-fill"></i> Applications Closed</h3>
+        <p style="color:#991b1b;margin:0;">This position is no longer accepting applications. Scroll down for similar jobs still open.</p>
+      </div>
+      {% else %}
+      <div class="apply-card">
+        <h3><i class="bi bi-send-fill"></i> How to Apply</h3>
+
+        {% if job.application_custom_text %}
+          <div class="apply-custom-text" style="margin-bottom:1.25rem;">{{ job.application_custom_text }}</div>
         {% endif %}
 
-        {% if job.responsibilities %}
-          <h2><i class="bi bi-list-check"></i>Responsibilities</h2>
-          <ul>
-            {% for r in job.responsibilities %}<li>{{ r }}</li>{% endfor %}
-          </ul>
+        {% if job.application_type == 'LINK' and job.application_target %}
+          <a href="{{ job.application_target }}" target="_blank" rel="noopener nofollow"
+             class="btn btn-amber" style="padding:.85rem 1.5rem;">
+            <i class="bi bi-box-arrow-up-right"></i> Apply on External Site
+          </a>
+        {% elif job.application_type == 'EMAIL' and job.application_target %}
+          <a href="mailto:{{ job.application_target }}?subject=Application%20for%20{{ job.title|urlencode }}"
+             class="btn btn-amber" style="padding:.85rem 1.5rem;">
+            <i class="bi bi-envelope-fill"></i> Open Mail Client
+          </a>
+        {% elif auto_apply_kind == 'email' %}
+          <a href="mailto:{{ auto_apply_target }}?subject=Application%20for%20{{ job.title|urlencode }}"
+             class="btn btn-amber" style="padding:.85rem 1.5rem;">
+            <i class="bi bi-envelope-fill"></i> Email Application
+          </a>
+        {% elif auto_apply_kind == 'link' %}
+          <a href="{{ auto_apply_target }}" target="_blank" rel="noopener nofollow"
+             class="btn btn-amber" style="padding:.85rem 1.5rem;">
+            <i class="bi bi-box-arrow-up-right"></i> Apply Online
+          </a>
         {% endif %}
-
-        {% if job.qualifications %}
-          <h2><i class="bi bi-mortarboard-fill"></i>Qualifications &amp; Requirements</h2>
-          <ul>
-            {% for q in job.qualifications %}<li>{{ q }}</li>{% endfor %}
-          </ul>
-        {% endif %}
-
-        {% if job.is_expired or job.deadline and job.deadline < today %}
-        <div class="apply-card" style="background:#fef2f2;border-color:#fecaca;border-left-color:#dc2626;">
-          <h3 style="color:#991b1b;"><i class="bi bi-x-circle-fill"></i> Applications Closed</h3>
-          <p style="color:#991b1b;margin:0;">This position is no longer accepting applications. Scroll down for similar jobs still open.</p>
-        </div>
-        {% else %}
-        <div class="apply-card">
-          <h3><i class="bi bi-send-fill"></i> How to Apply</h3>
-
-          {% if job.application_custom_text %}
-            <div class="apply-custom-text" style="margin-bottom:1.25rem;">{{ job.application_custom_text }}</div>
-          {% endif %}
-
-          {% if job.application_type == 'LINK' and job.application_target %}
-            <a href="{{ job.application_target }}" target="_blank" rel="noopener nofollow"
-               class="btn btn-amber" style="padding:.85rem 1.5rem;">
-              <i class="bi bi-box-arrow-up-right"></i> Apply on External Site
-            </a>
-
-          {% elif job.application_type == 'EMAIL' and job.application_target %}
-            <a href="mailto:{{ job.application_target }}?subject=Application%20for%20{{ job.title|urlencode }}"
-               class="btn btn-amber" style="padding:.85rem 1.5rem;">
-              <i class="bi bi-envelope-fill"></i> Open Mail Client
-            </a>
-
-          {% elif auto_apply_kind == 'email' %}
-            <a href="mailto:{{ auto_apply_target }}?subject=Application%20for%20{{ job.title|urlencode }}"
-               class="btn btn-amber" style="padding:.85rem 1.5rem;">
-              <i class="bi bi-envelope-fill"></i> Email Application
-            </a>
-
-          {% elif auto_apply_kind == 'link' %}
-            <a href="{{ auto_apply_target }}" target="_blank" rel="noopener nofollow"
-               class="btn btn-amber" style="padding:.85rem 1.5rem;">
-              <i class="bi bi-box-arrow-up-right"></i> Apply Online
-            </a>
-
-          {% endif %}
-        </div>
-        {% endif %}
+      </div>
+      {% endif %}
     </div>
 
+    {# RIGHT COLUMN — sidebar with Job Summary + Quick Apply #}
     <aside class="sidebar">
       <div class="sidebar-card">
         <h4>Job Summary</h4>
@@ -287,8 +294,11 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
       </div>
       {% endif %}
     </aside>
-  </div>
 
+  </div>
+  {# ================= END TWO-COLUMN LAYOUT ================= #}
+
+  {# Similar Jobs — FULL WIDTH, below the two-column grid #}
   {% if related_jobs %}
   <div class="related-section">
     <h3><i class="bi bi-collection-fill"></i> Similar Jobs</h3>
