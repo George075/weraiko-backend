@@ -1,4 +1,5 @@
 from datetime import timedelta, date
+from django.core.paginator import Paginator
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
@@ -16,6 +17,7 @@ from .serializers import (
     JobSerializer, ApplicationSerializer,
     GuideListSerializer, GuideDetailSerializer,
 )
+JOBS_PER_PAGE = 40
 
 
 # ============================================================
@@ -217,46 +219,61 @@ def education_jobs(request, slug):
     level, heading = EDUCATION_SLUGS[slug]
 
     if level == '__BLANK__':
-        # Form Four Leavers → jobs with no education_level specified
-        jobs = (
+        jobs_qs = (
             Job.objects
             .filter(is_active=True, expires_at__gt=timezone.now())
             .filter(Q(education_level='') | Q(education_level__isnull=True))
             .order_by('-posted_date')
         )
     else:
-        jobs = _seo_jobs_qs(education_level=level)
+        jobs_qs = _seo_jobs_qs(education_level=level)
+
+    total_count = jobs_qs.count()
+    paginator = Paginator(jobs_qs, JOBS_PER_PAGE)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'jobs/seo_landing.html', {
-        'jobs': jobs,
+        'jobs': page_obj,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'total_count': total_count,
         'heading': heading,
         'intro': (
-            f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
+            f'Browse {total_count} verified {heading.lower()} — updated daily. '
             'No sign-up required. Free to apply.'
         ),
-        'canonical_url': f'https://www.wera-iko.co.ke/jobs/education/{slug}/',
+        'canonical_url': f'https://wera-iko.co.ke/jobs/education/{slug}/',
         'page_kind': 'education',
     })
 
 def category_jobs(request, slug):
     """SEO landing page: /jobs/category/<slug>/."""
+    from django.db.models import Q
     if slug not in CATEGORY_SLUGS:
         raise Http404('Unknown category slug')
     category, heading = CATEGORY_SLUGS[slug]
 
-    # Match jobs whose primary OR secondary category equals this category
-    jobs = (
+    jobs_qs = (
         Job.objects
         .filter(is_active=True, expires_at__gt=timezone.now())
         .filter(Q(category=category) | Q(secondary_category=category))
         .order_by('-posted_date')
     )
 
+    total_count = jobs_qs.count()
+    paginator = Paginator(jobs_qs, JOBS_PER_PAGE)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'jobs/seo_landing.html', {
-        'jobs': jobs,
+        'jobs': page_obj,                    # paginated object
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'total_count': total_count,
         'heading': heading,
         'intro': (
-            f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
+            f'Browse {total_count} verified {heading.lower()} — updated daily. '
             'No sign-up required. Free to apply.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/jobs/category/{slug}/',
@@ -275,7 +292,6 @@ LOCATION_SLUGS = {
     'nakuru-jobs':       ('Nakuru, Kenya',    'Jobs in Nakuru'),
     'eldoret-jobs':      ('Eldoret, Kenya',   'Jobs in Eldoret'),
     'thika-jobs':        ('Thika, Kenya',     'Jobs in Thika'),
-    'athi-river-jobs':   ('Athi River, Kenya','Jobs in Athi River'),
     'kajiado-jobs':      ('Kajiado, Kenya',   'Jobs in Kajiado'),
     'machakos-jobs':     ('Machakos, Kenya',  'Jobs in Machakos'),
     'meru-jobs':         ('Meru, Kenya',      'Jobs in Meru'),
@@ -292,13 +308,21 @@ def location_jobs(request, slug):
     if slug not in LOCATION_SLUGS:
         raise Http404('Unknown location slug')
     location, heading = LOCATION_SLUGS[slug]
-    jobs = _seo_jobs_qs(location=location)
+    jobs_qs = _seo_jobs_qs(location=location)
+
+    total_count = jobs_qs.count()
+    paginator = Paginator(jobs_qs, JOBS_PER_PAGE)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'jobs/seo_landing.html', {
-        'jobs': jobs,
+        'jobs': page_obj,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'total_count': total_count,
         'heading': heading,
         'intro': (
-            f'Browse {jobs.count()} verified {heading.lower()} — updated daily. '
+            f'Browse {total_count} verified {heading.lower()} — updated daily. '
             'No sign-up required. Free to apply.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/jobs/location/{slug}/',
@@ -322,34 +346,39 @@ def company_jobs(request, slug):
         expires_at__gt=timezone.now(),
     ).order_by('-posted_date')
 
-    # Match by slugified company name
-    jobs = [j for j in all_jobs if _slugify_company(j.company) == slug]
+    jobs_list = [j for j in all_jobs if _slugify_company(j.company) == slug]
 
-    if not jobs:
-        # Try substring matches (handles "Company XYZ" vs "Company-XYZ")
+    if not jobs_list:
         possible = [
             j for j in all_jobs
             if slug.replace('-', '') in _slugify_company(j.company).replace('-', '')
             or _slugify_company(j.company).replace('-', '') in slug.replace('-', '')
         ]
         if possible:
-            jobs = possible
+            jobs_list = possible
         else:
             raise Http404(f'No jobs found for company: {slug}')
 
-    display_name = jobs[0].company if jobs else slug.replace('-', ' ').title()
+    display_name = jobs_list[0].company if jobs_list else slug.replace('-', ' ').title()
+    total_count = len(jobs_list)
+
+    paginator = Paginator(jobs_list, JOBS_PER_PAGE)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'jobs/seo_landing.html', {
-        'jobs': jobs,
+        'jobs': page_obj,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'total_count': total_count,
         'heading': f'{display_name} Jobs in Kenya',
         'intro': (
-            f'Browse {len(jobs)} verified job openings at {display_name} in Kenya. '
+            f'Browse {total_count} verified job openings at {display_name} in Kenya. '
             'Updated daily. Free to apply.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/companies/{slug}/',
         'page_kind': 'company',
     })
-
 
 def companies_index(request):
     """Public index of all companies with active jobs: /companies/."""
