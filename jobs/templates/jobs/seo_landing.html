@@ -7,7 +7,7 @@
 <meta name="description" content="{{ intro }}">
 <link rel="canonical" href="{{ canonical_url }}">
 <meta name="robots" content="index, follow">
-  
+
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{ heading }} | Weraiko">
 <meta property="og:description" content="{{ intro }}">
@@ -23,7 +23,7 @@
     {"@type":"ListItem","position":3,"name":"{{ heading }}","item":"{{ canonical_url }}"}
   ]
 }
-</script>  
+</script>
 
 <link rel="icon" href="https://www.wera-iko.co.ke/images/weraikologo.png">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -145,7 +145,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
   <p>{{ intro }}</p>
   <div class="count-chip">
     <i class="bi bi-briefcase-fill"></i>
-    {{ jobs.count }} job{{ jobs.count|pluralize }} available
+    {{ total_count }} job{{ total_count|pluralize }} available
   </div>
 </section>
 
@@ -182,7 +182,8 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
     </div>
     {% endfor %}
   </div>
-{# ---------- PAGINATION ---------- #}
+
+  {# ---------- PAGINATION ---------- #}
   {% if page_obj and page_obj.paginator.num_pages > 1 %}
   <div class="pagination" style="display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:2.5rem;flex-wrap:wrap;">
     {% if page_obj.has_previous %}
@@ -211,10 +212,11 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
     {% endif %}
   </div>
   {% endif %}
+
   <div class="other-links">
     <h3><i class="bi bi-compass-fill"></i> Browse other categories</h3>
     <div class="chips">
-        {% if page_kind == 'category' %}
+      {% if page_kind == 'category' %}
         <a href="/jobs/category/ict-jobs-in-kenya/">ICT &amp; IT</a>
         <a href="/jobs/category/engineering-jobs-in-kenya/">Engineering</a>
         <a href="/jobs/category/customer-service-jobs-in-kenya/">Customer Service</a>
@@ -228,14 +230,14 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
         <a href="/jobs/category/transport-jobs-in-kenya/">Transport</a>
         <a href="/jobs/category/security-jobs-in-kenya/">Security</a>
 
-       {% elif page_kind == 'education' %}
+      {% elif page_kind == 'education' %}
         <a href="/jobs/education/certificate-jobs-in-kenya/">Certificate Jobs</a>
         <a href="/jobs/education/diploma-jobs-in-kenya/">Diploma Jobs</a>
         <a href="/jobs/education/degree-jobs-in-kenya/">Degree Jobs</a>
         <a href="/jobs/education/masters-jobs-in-kenya/">Masters Jobs</a>
         <a href="/jobs/education/form-four-leavers-jobs/">Form Four Leaver Jobs</a>
 
-       {% elif page_kind == 'location' %}
+      {% elif page_kind == 'location' %}
         <a href="/jobs/location/nairobi-jobs/">Nairobi</a>
         <a href="/jobs/location/mombasa-jobs/">Mombasa</a>
         <a href="/jobs/location/kisumu-jobs/">Kisumu</a>
@@ -251,8 +253,8 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
         <a href="/jobs/location/nyeri-jobs/">Nyeri</a>
         <a href="/jobs/location/embu-jobs/">Embu</a>
         <a href="/jobs/location/kitui-jobs/">Kitui</a>
-      
-        {% elif page_kind == 'company' %}
+
+      {% elif page_kind == 'company' %}
         <a href="/companies/">All Companies</a>
         <a href="/jobs/location/nairobi-jobs/">Nairobi Jobs</a>
         <a href="/jobs/category/ict-jobs-in-kenya/">ICT Jobs</a>
