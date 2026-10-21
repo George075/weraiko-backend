@@ -240,8 +240,8 @@ def education_jobs(request, slug):
         'total_count': total_count,
         'heading': heading,
         'intro': (
-            f'Browse {total_count} verified {heading.lower()} — updated daily. '
-            'No sign-up required. Free to apply.'
+            f'Find {heading.lower()} and explore {total_count} current job vacancies in Kenya. '
+'Review the qualifications and application requirements for each position.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/jobs/education/{slug}/',
         'page_kind': 'education',
@@ -273,8 +273,8 @@ def category_jobs(request, slug):
         'total_count': total_count,
         'heading': heading,
         'intro': (
-            f'Browse {total_count} verified {heading.lower()} — updated daily. '
-            'No sign-up required. Free to apply.'
+           f'Explore {total_count} current {heading.lower()} in Kenya. '
+'Find job vacancies, review the requirements and learn how to apply.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/jobs/category/{slug}/',
         'page_kind': 'category',
@@ -357,8 +357,8 @@ def location_jobs(request, slug):
         'total_count': total_count,
         'heading': heading,
         'intro': (
-            f'Browse {total_count} verified {heading.lower()} — updated daily. '
-            'No sign-up required. Free to apply.'
+            f'Find jobs in {heading.replace("Jobs in ", "")}. '
+f'Explore {total_count} current job vacancies and review the application details.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/jobs/location/{slug}/',
         'page_kind': 'location',
@@ -408,8 +408,8 @@ def company_jobs(request, slug):
         'total_count': total_count,
         'heading': f'{display_name} Jobs in Kenya',
         'intro': (
-            f'Browse {total_count} verified job openings at {display_name} in Kenya. '
-            'Updated daily. Free to apply.'
+            f'Explore {total_count} job vacancies listed for {display_name} in Kenya. '
+'Review current openings, job requirements and application details.'
         ),
         'canonical_url': f'https://wera-iko.co.ke/companies/{slug}/',
         'page_kind': 'company',
