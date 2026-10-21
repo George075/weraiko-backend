@@ -156,7 +156,7 @@ h1,h2,h3{font-weight:800;letter-spacing:-.025em;color:var(--ink);line-height:1.1
       {% endif %}
       <div class="job-header-info">
         <h1>{{ job.title }}</h1>
-        <div class="company-name">{{ job.company|default:"Weraiko Direct" }}</div>
+        <a href="/companies/" class="company-name" title="View all companies">{{ job.company|default:"Weraiko Direct" }}</a>
       </div>
     </div>
     <div class="meta-chips">
